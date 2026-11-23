@@ -75,7 +75,8 @@ public class Station {
     // ---------------------------------------------------------
     // Takes one bike of the given type out of the station from the
     // given hour onward. Returns false if no bike of that type is
-    // available at that hour or the type is not recognised.
+    // available for the rest of the day from that hour, or the type
+    // is not recognised.
     public boolean checkoutBike(String bike, int time) {
         if (bike.equals("Standard"))
             return inventory[0].removeBikes(time, 1);

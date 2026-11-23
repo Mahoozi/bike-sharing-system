@@ -17,9 +17,10 @@ trip receipts, rider summaries and a station's revenue. It takes no input.
   hour onward.
 - **Four bike types:** Standard, E-Bike, Kids and Tandem, each with its own
   hourly rate.
-- **Rentals that respect availability:** a rental is refused if no bike of
-  the requested type is available at the start station at that hour, or if
-  the bike type is not recognised.
+- **Rentals that respect availability:** a rental is refused if a bike of
+  the requested type is not available at the start station from that hour
+  to the end of the day, or if the bike type is not recognised. Counts
+  never go below zero, even when rentals are entered out of time order.
 - **One-way and round trips:** a bike can be returned to any station.
 - **Membership pricing:** Student, Senior and Kids members pay a reduced
   rate; Adult members pay full price.
@@ -97,7 +98,10 @@ A `Station` is created with a starting count for each bike type, and that
 count applies to all 24 hours. Times are whole hours from 0 to 23.
 
 - **Renting** a bike at hour *h* removes one bike from hour *h* through 23.
-  The rental is refused if the count at hour *h* is already 0.
+  The rental is refused if the count is 0 at hour *h* or at any later hour.
+  Because a trip's return hour is not known when it starts, this
+  conservative check stops a station from handing out a bike that is already
+  booked from a later hour.
 - **Returning** a bike at hour *h* adds one bike from hour *h* through 23.
 
 So after a Standard bike is taken from Concordia at 5:00 and returned to
@@ -210,10 +214,9 @@ The revenue of UdeM Station is 29.40
   `ArrayIndexOutOfBoundsException`, an end hour earlier than the start hour
   produces a negative fare and negative station revenue, and an end hour
   above 23 is charged but the bike is never added back to any station.
-- **Rentals entered out of time order can over-book a station:** availability
-  is only checked at the rental hour. If a bike is already reserved from a
-  later hour, a rental at an earlier hour can still succeed and push the
-  later hours' count below zero.
+- **Conservative availability:** because the return hour is unknown when a
+  trip starts, a rental is refused if any later hour has no bike of that
+  type, even if the new trip would have ended before then.
 - **String-based types:** bike types and memberships are plain strings. An
   unknown bike type is refused at rental time; an unknown membership is
   silently charged full price.

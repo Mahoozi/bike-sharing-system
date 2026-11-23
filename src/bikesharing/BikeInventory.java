@@ -56,10 +56,18 @@ public class BikeInventory {
     }
 
     // Removes bikes at the given hour and every hour after it.
-    // Returns false, and changes nothing, if fewer than num bikes
-    // are available at that hour.
+    // Returns false, and changes nothing, if fewer than num bikes are
+    // available at that hour or at any later hour. Checking the later
+    // hours matters when bikes have already been taken from a later
+    // hour: removing more would drive those counts below zero.
     public boolean removeBikes(int time, int num) {
-        if (bikeNum[time] < num)
+        int fewest = bikeNum[time];
+
+        for (int i = time + 1; i < bikeNum.length; i++) {
+            fewest = Math.min(fewest, bikeNum[i]);
+        }
+
+        if (fewest < num)
             return false;
 
         for (int i = time; i < bikeNum.length; i++) {
