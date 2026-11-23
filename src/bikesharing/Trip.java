@@ -42,8 +42,12 @@ public class Trip {
     // ---------------------------------------------------------
     // Tries to take a bike of this trip's type out of the start station
     // at the given hour. Records the start station and hour and returns
-    // true on success; returns false if no such bike is available.
+    // true on success; returns false if the hour is outside 0-23 or no
+    // such bike is available.
     public boolean checkIn(Station startStation, int startTime) {
+        if (startTime < 0 || startTime > 23)
+            return false;
+
         if (startStation.checkoutBike(bikeType, startTime)) {
             this.startStation = startStation;
             this.startTime    = startTime;
@@ -58,7 +62,13 @@ public class Trip {
     // ---------------------------------------------------------
     // Returns the bike to the end station at the given hour, credits the
     // revenue to the station(s), and returns the amount charged.
+    // Throws IllegalArgumentException, without changing anything, if the
+    // end hour is before the start hour or after 23.
     public double checkOut(Station endStation, int endTime) {
+        if (endTime < startTime || endTime > 23)
+            throw new IllegalArgumentException("End hour " + endTime
+                    + " must be between the start hour (" + startTime + ") and 23");
+
         this.endStation = endStation;
         this.endTime    = endTime;
 

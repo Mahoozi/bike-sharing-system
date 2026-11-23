@@ -67,8 +67,9 @@ public class Rider {
     // Starting and ending trips
     // ---------------------------------------------------------
     // Starts a new trip by taking a bike of the given type from the
-    // start station at the given hour. Returns false if the bike is not
-    // available or the rider's trip history is full.
+    // start station at the given hour. Returns false if the hour is
+    // outside 0-23, the bike is not available, or the rider's trip
+    // history is full.
     public boolean startTrip(String bikeType, Station startStation, int startTime) {
         for (int i = 0; i < trips.length; i++) {
             if (trips[i] == null) {
@@ -88,7 +89,9 @@ public class Rider {
 
     // Ends the rider's most recent unfinished trip at the given station
     // and hour, and returns that trip's summary. Returns null if the rider
-    // has no trip in progress.
+    // has no trip in progress. Throws IllegalArgumentException if the end
+    // hour is before the trip's start hour or after 23; the trip then
+    // stays in progress.
     public String endTrip(Station endStation, int endTime) {
         for (int i = trips.length - 1; i >= 0; i--) {
             if (trips[i] != null && trips[i].getEndStation() == null) {

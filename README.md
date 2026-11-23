@@ -22,6 +22,8 @@ trip receipts, rider summaries and a station's revenue. It takes no input.
   to the end of the day, or if the bike type is not recognised. Counts
   never go below zero, even when rentals are entered out of time order.
 - **One-way and round trips:** a bike can be returned to any station.
+- **Hour checks:** trips must start at an hour from 0 to 23 and end at or
+  after their start hour, no later than 23.
 - **Membership pricing:** Student, Senior and Kids members pay a reduced
   rate; Adult members pay full price.
 - **Station revenue:** a round trip's fare goes to its station; a one-way
@@ -111,10 +113,13 @@ and McGill shows one more from hour 10 onward.
 ### Trips
 
 `Rider.startTrip(bikeType, station, hour)` creates a trip and tries to take a
-bike from the station; it returns `false` if the rental is refused or the
-rider already has 30 trips. `Rider.endTrip(station, hour)` ends the rider's
-most recent unfinished trip and returns a one-line receipt, or `null` if the
-rider has no trip in progress.
+bike from the station; it returns `false` if the start hour is outside 0–23,
+no bike is available, or the rider already has 30 trips.
+`Rider.endTrip(station, hour)` ends the rider's most recent unfinished trip
+and returns a one-line receipt, or `null` if the rider has no trip in
+progress. An end hour earlier than the start hour or later than 23 throws an
+`IllegalArgumentException` and leaves the trip in progress, so no negative
+fare is charged and no bike goes missing.
 
 ### Pricing and membership discounts
 
@@ -210,10 +215,6 @@ The revenue of UdeM Station is 29.40
   is created but not used by the demo.
 - **Single day, whole hours:** times are integers 0–23. There are no minutes,
   dates or multi-day trips.
-- **Hours are not validated:** a start hour outside 0–23 throws an
-  `ArrayIndexOutOfBoundsException`, an end hour earlier than the start hour
-  produces a negative fare and negative station revenue, and an end hour
-  above 23 is charged but the bike is never added back to any station.
 - **Conservative availability:** because the return hour is unknown when a
   trip starts, a rental is refused if any later hour has no bike of that
   type, even if the new trip would have ended before then.
